@@ -199,6 +199,48 @@ class TestHangman(unittest.TestCase):
         self.assertEqual(result, "timeout")
         self.assertEqual(self.game.lives, 1)
 
+    def test_display_word_empty_string(self):
+        """Test display with empty word"""
+        self.game.word = ""
+        self.assertEqual(self.game.display_word(), "")
+
+    def test_display_word_single_letter(self):
+        """Test display with single letter word"""
+        self.game.word = "a"
+        self.game.guessed_letters = []
+        self.assertEqual(self.game.display_word(), "_")
+    
+    def test_repeated_wrong_guess(self):
+        """Test repeated wrong guess doesn't double-deduct lives"""
+        self.game.word = "python"
+        self.game.process_guess("x")  # First wrong
+        lives_after_first = self.game.lives
+        result = self.game.process_guess("x")  # Same wrong again
+        self.assertEqual(result, "already guessed")
+        self.assertEqual(self.game.lives, lives_after_first)
+
+    def test_complete_game_win(self):
+        """Test a complete winning game scenario"""
+        self.game.initialize_game("1")
+        self.game.word = "cat"  # Force a specific word
+        
+        results = []
+        results.append(self.game.process_guess("c"))
+        results.append(self.game.process_guess("a")) 
+        results.append(self.game.process_guess("t"))
+        
+        self.assertEqual(results, ["correct", "correct", "win"])
+
+    def test_complete_game_loss(self):
+        """Test a complete losing game scenario"""
+        self.game.initialize_game("1")
+        self.game.word = "cat"
+        
+        results = []
+        for wrong_guess in "xyzuvw":  # 6 wrong guesses
+            results.append(self.game.process_guess(wrong_guess))
+        
+        self.assertEqual(results[-1], "lose")
 
 if __name__ == "__main__":
     unittest.main()
