@@ -36,4 +36,20 @@ class HangmanGame:
         """Check if all letters in the word have been guessed."""
         return all(letter in self.guessed_letters or letter == " " for letter in self.word)
 
+    def process_guess(self, guess):
+        if guess in self.guessed_letters:
+            return "already guessed"
+
+        self.guessed_letters.append(guess)
+
+        if guess in self.word:
+            return "win" if self.is_word_guessed() else "correct"
+        else:
+            self.lives -= 1
+            return "lose" if self.lives == 0 else "wrong"
+        
+    def process_timeout(self):
+        self.lives -= 1
+        return "lose" if self.lives == 0 else "timeout"
+
 

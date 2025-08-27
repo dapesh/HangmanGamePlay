@@ -41,6 +41,18 @@ class TestHangman(unittest.TestCase):
         self.game.guessed_letters = ["h", "i"]
         self.assertTrue(self.game.is_word_guessed())
 
+    def test_process_guess_correct(self):
+        self.game.word = "hi"
+        result = self.game.process_guess("h")
+        self.assertEqual(result, "correct")
+        self.assertIn("h", self.game.guessed_letters)
+
+    def test_process_timeout(self):
+        self.game.lives = 2
+        result = self.game.process_timeout()
+        self.assertEqual(result, "timeout")
+        self.assertEqual(self.game.lives, 1)
+
 
 if __name__ == "__main__":
     unittest.main()
