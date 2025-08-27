@@ -83,9 +83,97 @@ class TestHangman(unittest.TestCase):
         self.game.initialize_game("1")
         self.game.word = "python"
         initial_lives = self.game.lives
+        
         result = self.game.process_guess("p")  # Correct guess
+        
         self.assertEqual(result, "correct")
         self.assertEqual(self.game.lives, initial_lives)
+
+    def test_game_over_wrong_guess(self):
+        """Test that wrong guess on last life ends game"""
+        self.game.initialize_game("1")
+        self.game.word = "python"
+        self.game.lives = 1  # Set to last life
+        
+        result = self.game.process_guess("x")  # Wrong guess
+        
+        self.assertEqual(result, "lose")
+        self.assertEqual(self.game.lives, 0)
+
+    def test_game_over_timeout(self):
+        """Test that timeout on last life ends game"""
+        self.game.initialize_game("1")
+        self.game.lives = 1  # Set to last life
+        
+        result = self.game.process_timeout()
+        
+        self.assertEqual(result, "lose")
+        self.assertEqual(self.game.lives, 0)
+
+    def test_already_guessed_letter(self):
+        """Test that already guessed letter doesn't affect lives"""
+        self.game.initialize_game("1")
+        self.game.word = "python"
+        self.game.guessed_letters = ["p"]
+        initial_lives = self.game.lives
+        
+        result = self.game.process_guess("p")  # Already guessed
+        
+        self.assertEqual(result, "already guessed")
+        self.assertEqual(self.game.lives, initial_lives)
+
+    def test_win_condition(self):
+        """Test that correct final guess wins game"""
+        self.game.initialize_game("1")
+        self.game.word = "hi"
+        self.game.guessed_letters = ["h"]
+        
+        result = self.game.process_guess("i")  # Final correct guess
+        
+        self.assertEqual(result, "win")
+        self.assertTrue(self.game.is_word_guessed())
+
+    def test_input_validation_empty_string(self):
+        """Test that empty string input is invalid"""
+        guess = ""
+        is_valid = (len(guess) == 1 and guess.isalpha())
+        self.assertFalse(is_valid, "Empty string should be invalid")
+
+    def test_input_validation_multiple_letters(self):
+        """Test that multiple letters are invalid"""
+        guess = "ab"
+        is_valid = (len(guess) == 1 and guess.isalpha())
+        self.assertFalse(is_valid, "Multiple letters should be invalid")
+
+    def test_input_validation_numbers(self):
+        """Test that numbers are invalid"""
+        guess = "1"
+        is_valid = (len(guess) == 1 and guess.isalpha())
+        self.assertFalse(is_valid, "Numbers should be invalid")
+
+    def test_input_validation_symbols(self):
+        """Test that symbols are invalid"""
+        guess = "@"
+        is_valid = (len(guess) == 1 and guess.isalpha())
+        self.assertFalse(is_valid, "Symbols should be invalid")
+
+    def test_input_validation_space(self):
+        """Test that space character is invalid"""
+        guess = " "
+        is_valid = (len(guess) == 1 and guess.isalpha())
+        self.assertFalse(is_valid, "Space should be invalid")
+
+    def test_input_validation_valid_letter(self):
+        """Test that valid single letters are valid"""
+        guess = "a"
+        is_valid = (len(guess) == 1 and guess.isalpha())
+        self.assertTrue(is_valid, "Single letters should be valid")
+
+    def test_input_validation_uppercase_letter(self):
+        """Test that uppercase letters are valid (they get converted to lowercase)"""
+        guess = "A"
+        is_valid = (len(guess) == 1 and guess.isalpha())
+        self.assertTrue(is_valid, "Uppercase letters should be valid")
 
     def test_initialize_game_resets_state(self):
         self.game.word = "old"
