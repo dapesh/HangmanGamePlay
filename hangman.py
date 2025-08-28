@@ -33,6 +33,7 @@ class HangmanGame:
                 "Guess a letter (15s to answer, 'quit' to exit): ", timeout=15
             ).lower().strip()
         except TimeoutOccurred:
+            print("Time's up! You lost a life")
             return game.process_timeout()
 
         if guess == "quit":
