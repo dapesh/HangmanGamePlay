@@ -1,0 +1,10 @@
+python
+malaysia
+hangman
+developer
+keyboard
+science
+variable
+apple
+banana
+programming

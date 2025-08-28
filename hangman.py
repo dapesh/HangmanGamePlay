@@ -3,14 +3,42 @@
 
 import random
 from inputimeout import inputimeout, TimeoutOccurred
-WORDS = [
-    "python", "malaysia", "hangman",
-    "developer", "keyboard", "science", "variable"
-]
-PHRASES = [
-    "hello world", "open ai chatbot",
-    "machine learning", "software engineer"
-]
+# Load Dictionary files
+
+
+def load_file(filename):
+    """Load lines from a file and return as a list."""
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            return [line.strip().lower() for line in f if line.strip()]
+    except FileNotFoundError:
+        print(f"Warning: {filename} not found.")
+        return []
+
+
+WORDS = load_file("dictionary.txt")
+PHRASES = load_file("phrases.txt")
+
+if not WORDS:
+    WORDS = [
+        "python", "malaysia", "hangman",
+        "developer", "keyboard", "science", "variable"
+    ]
+if not PHRASES:
+    PHRASES = [
+        "hello world", "open ai chatbot",
+        "machine learning", "software engineer"
+    ]
+
+
+def choose_random_word():
+    "Return a random word from dictionary.txt file"
+    return random.choice(WORDS)
+
+
+def choose_random_phrase():
+    "Return a random phrase from phrases.txt file"
+    return random.choice(PHRASES)
 
 
 class HangmanGame:
@@ -52,8 +80,8 @@ class HangmanGame:
     def choose_word(self, level):
         """Return a random word or phrase based on level choice."""
         if level == "1":
-            return random.choice(WORDS)
-        return random.choice(PHRASES)
+            return choose_random_word()
+        return choose_random_phrase()
 
     def initialize_game(self, level):
         """Initialize the game with the given level."""
@@ -103,6 +131,12 @@ class HangmanGame:
             return "lose"
         return "timeout"
 
+    def display_guessed_letters(self):
+        """Return a string of all guessed letters."""
+        if not self.guessed_letters:
+            return ""
+        return ", ".join(sorted(self.guessed_letters))
+
 
 def main():
     """Main game function with UI."""
@@ -116,6 +150,7 @@ def main():
     while game.lives > 0 and not game.is_word_guessed():
         print(game.display_word())
         print(f"Lives left: {game.lives}\n")
+        print(f"Guessed letters: {[game.display_guessed_letters()]}\n")
 
         result = game.handle_guess(game)
 
