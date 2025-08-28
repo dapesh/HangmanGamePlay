@@ -32,12 +32,12 @@ if not PHRASES:
 
 
 def choose_random_word():
-    "Return a random word from dictionary.txt file"
+    """Return a random word from dictionary.txt file"""
     return random.choice(WORDS)
 
 
 def choose_random_phrase():
-    "Return a random phrase from phrases.txt file"
+    """Return a random phrase from phrases.txt file"""
     return random.choice(PHRASES)
 
 
@@ -54,7 +54,7 @@ class HangmanGame:
                 return choice
             print("Invalid choice. Please enter 1 or 2.")
 
-    def handle_guess(self, game):
+    def handle_guess(self):
         """Handle a single guess and return the result."""
         try:
             guess = inputimeout(
@@ -62,7 +62,7 @@ class HangmanGame:
             ).lower().strip()
         except TimeoutOccurred:
             print("Time's up! You lost a life")
-            return game.process_timeout()
+            return self.process_timeout()
 
         if guess == "quit":
             return "quit"
@@ -70,7 +70,7 @@ class HangmanGame:
         if len(guess) != 1 or not guess.isalpha():
             return "invalid"
 
-        return game.process_guess(guess)
+        return self.process_guess(guess)
 
     def __init__(self):
         self.word = ""
@@ -111,7 +111,7 @@ class HangmanGame:
     def process_guess(self, guess):
         """Process a guess and return the result."""
         if guess in self.guessed_letters:
-            return "already guessed"
+            return "already_guessed"
 
         self.guessed_letters.append(guess)
 
@@ -150,9 +150,9 @@ def main():
     while game.lives > 0 and not game.is_word_guessed():
         print(game.display_word())
         print(f"Lives left: {game.lives}\n")
-        print(f"Guessed letters: {[game.display_guessed_letters()]}\n")
+        print(f"Guessed letters: {game.display_guessed_letters()}\n")
 
-        result = game.handle_guess(game)
+        result = game.handle_guess()
 
         if result == "quit":
             print(f"You quit the game. The word was: {game.word}")
@@ -160,13 +160,13 @@ def main():
         if result == "invalid":
             print("Invalid input. Please enter a single letter.\n")
             continue
-        if result == "already guessed":
-            print("You already guessed that letter.\n")
+        if result == "already_guessed":
+            print("You already guessed the letter.\n")
         elif result == "correct":
             print("Correct!\n")
-        if result == "wrong":
+        elif result == "wrong":
             print("Wrong!\n")
-        if result == "win":
+        elif result == "win":
             print(game.display_word())
             print(f"Congratulations! You guessed the word: {game.word}")
             break

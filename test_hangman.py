@@ -119,7 +119,7 @@ class TestHangman(unittest.TestCase):
         
         result = self.game.process_guess("p")  # Already guessed
         
-        self.assertEqual(result, "already guessed")
+        self.assertEqual(result, "already_guessed")
         self.assertEqual(self.game.lives, initial_lives)
 
     def test_win_condition(self):
@@ -216,7 +216,7 @@ class TestHangman(unittest.TestCase):
         self.game.process_guess("x")  # First wrong
         lives_after_first = self.game.lives
         result = self.game.process_guess("x")  # Same wrong again
-        self.assertEqual(result, "already guessed")
+        self.assertEqual(result, "already_guessed")
         self.assertEqual(self.game.lives, lives_after_first)
 
     def test_complete_game_win(self):
