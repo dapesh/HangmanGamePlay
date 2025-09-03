@@ -1,11 +1,9 @@
 
 """Hangman Game with two difficulty levels and 15-second timer per guess."""
 
-import threading
 import random
 import time
-from inputimeout import TimeoutOccurred, inputimeout
-
+import msvcrt
 # Load Dictionary files
 
 
@@ -58,36 +56,36 @@ class HangmanGame:
             print("Invalid choice. Please enter 1 or 2.")
 
     def handle_guess(self):
-        """Handle a single guess with countdown timer and return the result."""
+        """Handle a single guess with live countdown timer"""
         timeout = 15
-        guess = None
-        stop_timer = False
+        prompt = "Guess a letter (type 'quit' to exit): "
+        print(prompt, end="", flush=True)
+        start_time = time.time()
+        input_str = ""
+        while True:
+            elapsed = int(time.time() - start_time)
+            remaining = timeout - elapsed
 
-        def countdown_display(seconds):
-            for remaining in range(seconds, 0, -1):
-                if stop_timer:
+            if remaining <= 0:
+                print("\n⏳ Time's up! You lost a life.")
+                self.lives -= 1
+                return "timeout"
+            print(
+                f"\r{prompt}{input_str} ⏱️ {remaining:2d}s ",
+                end="",
+                flush=True
+            )
+            if msvcrt.kbhit():
+                char = msvcrt.getwch()
+                if char == "\r":
+                    print()
                     break
-                print(
-                    f"\r⏳ Time left: {remaining:2d}s | Guess a letter: ",
-                    end="",
-                    flush=True
-                )
-                time.sleep(1)
-            print("\r", end="")
-        timer_thread = threading.Thread(
-            target=countdown_display,
-            args=(timeout,),
-            daemon=True
-        )
-        timer_thread.start()
-        try:
-            # guess = input().lower().strip()
-            guess = inputimeout(timeout=timeout).lower().strip()
-        except TimeoutOccurred:
-            print("\n⏳ Time's up! You lost a life.")
-            self.lives -= 1
-            return "timeout"
-        stop_timer = True
+                if char == "\b":
+                    input_str = input_str[:-1]
+                else:
+                    input_str += char
+            time.sleep(0.05)
+        guess = input_str.lower().strip()
         if guess == "quit":
             return "quit"
         if len(guess) != 1 or not guess.isalpha():
