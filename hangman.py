@@ -1,8 +1,11 @@
 
 """Hangman Game with two difficulty levels and 15-second timer per guess."""
 
+import threading
 import random
-from inputimeout import inputimeout, TimeoutOccurred
+import time
+from inputimeout import TimeoutOccurred, inputimeout
+
 # Load Dictionary files
 
 
@@ -55,21 +58,40 @@ class HangmanGame:
             print("Invalid choice. Please enter 1 or 2.")
 
     def handle_guess(self):
-        """Handle a single guess and return the result."""
-        try:
-            guess = inputimeout(
-                "Guess a letter (15s to answer, 'quit' to exit): ", timeout=15
-            ).lower().strip()
-        except TimeoutOccurred:
-            print("⏳ Time's up! You lost a life.")
-            return self.process_timeout()
+        """Handle a single guess with countdown timer and return the result."""
+        timeout = 15
+        guess = None
+        stop_timer = False
 
+        def countdown_display(seconds):
+            for remaining in range(seconds, 0, -1):
+                if stop_timer:
+                    break
+                print(
+                    f"\r⏳ Time left: {remaining:2d}s | Guess a letter: ",
+                    end="",
+                    flush=True
+                )
+                time.sleep(1)
+            print("\r", end="")
+        timer_thread = threading.Thread(
+            target=countdown_display,
+            args=(timeout,),
+            daemon=True
+        )
+        timer_thread.start()
+        try:
+            # guess = input().lower().strip()
+            guess = inputimeout(timeout=timeout).lower().strip()
+        except TimeoutOccurred:
+            print("\n⏳ Time's up! You lost a life.")
+            self.lives -= 1
+            return "timeout"
+        stop_timer = True
         if guess == "quit":
             return "quit"
-
         if len(guess) != 1 or not guess.isalpha():
             return "invalid"
-
         return self.process_guess(guess)
 
     def __init__(self):
