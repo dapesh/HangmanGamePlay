@@ -19,27 +19,33 @@ class TestHangman(unittest.TestCase):
         phrase = self.game.choose_word("2")
         self.assertIn(phrase, PHRASES)
         self.assertEqual(phrase, PHRASES[-1])
-    
+
     #Requirement 2: Words come from valid dictionaries
     def test_initialize_game_valid_words(self):
         """Words come from valid dictionaries"""
         self.game.initialize_game("1")
         self.assertIn(self.game.word, WORDS)
+
+    def test_initialize_game_valid_phrases(self):
+        """Phrases come from valid dictionaries"""
+        self.game.initialize_game("2")
+        self.assertIn(self.game.word, PHRASES)
+
     # Requirement 3: Underscores for missing letters
     def test_display_word_no_guesses(self):
         """Test display with no letters guessed"""
         self.game.word = "python"
         self.assertEqual(self.game.display_word(), "_ _ _ _ _ _")
-    
+
     # Requirement 4: 15-second timer with life deduction
     def test_life_deduction_timeout(self):
-        """Requirement 4: Timeout reduces lives"""
+        """Timeout reduces lives"""
         initial_lives = self.game.lives
         result = self.game.process_timeout()
         self.assertEqual(result, "timeout")
         self.assertEqual(self.game.lives, initial_lives - 1)
 
-    # Requirement 5: Correct guess reveals letters    
+    # Requirement 5: Correct guess reveals letters
     def test_display_word_some_guesses(self):
         """Test display with some letters guessed"""
         self.game.word = "python"
@@ -50,25 +56,23 @@ class TestHangman(unittest.TestCase):
     def test_life_deduction_wrong_guess(self):
         """Test that wrong guess reduces lives"""
         self.game.initialize_game("1")
-        self.game.word = "python"  
+        self.game.word = "python"
         initial_lives = self.game.lives
-        
         result = self.game.process_guess("x")  # Wrong guess
-        
         self.assertEqual(result, "wrong")
         self.assertEqual(self.game.lives, initial_lives - 1)
-    
+
     # Requirement 7: Win before lives reach zero
     def test_win_condition(self):
         """Test that correct final guess wins game"""
         self.game.initialize_game("1")
         self.game.word = "hi"
         self.game.guessed_letters = ["h"]
-        
-        result = self.game.process_guess("i")  # Final correct guess
-        
+        self.game.lives = 1 # Player still has a life
+        result = self.game.process_guess("i")  
         self.assertEqual(result, "win")
         self.assertTrue(self.game.is_word_guessed())
+        self.assertTrue(self.game.lives > 0)
 
     # Requirement 8: Game continues until quit or loss
     def test_game_over_wrong_guess(self):
@@ -76,9 +80,7 @@ class TestHangman(unittest.TestCase):
         self.game.initialize_game("1")
         self.game.word = "python"
         self.game.lives = 1  # Set to last life
-        
         result = self.game.process_guess("x")  # Wrong guess
-        
         self.assertEqual(result, "lose")
         self.assertEqual(self.game.lives, 0)
 

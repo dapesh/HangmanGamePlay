@@ -61,7 +61,7 @@ class HangmanGame:
                 "Guess a letter (15s to answer, 'quit' to exit): ", timeout=15
             ).lower().strip()
         except TimeoutOccurred:
-            print("Time's up! You lost a life")
+            print("⏳ Time's up! You lost a life.")
             return self.process_timeout()
 
         if guess == "quit":
@@ -163,19 +163,19 @@ def main():
         if result == "already_guessed":
             print("You already guessed the letter.\n")
         elif result == "correct":
-            print("Correct!\n")
+            print("✅ Correct!\n")
         elif result == "wrong":
-            print("Wrong!\n")
+            print("❌ Wrong!\n")
         elif result == "win":
             print(game.display_word())
-            print(f"Congratulations! You guessed the word: {game.word}")
+            print(f"🎉 Congratulations! You guessed the word: {game.word}")
             break
         if result == "lose":
             break
 
     if game.lives == 0:
         print(game.display_word())
-        print(f"Game Over! The word was: {game.word}")
+        print(f"💀 Game Over! The word was: {game.word}")
 
 
 if __name__ == "__main__":
